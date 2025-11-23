@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Leaflet Hospitals Demo</title>
+
+  <style>
+#map { height: 85vh; }
+  </style>
+
+  
+</head>
+<body>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+     integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+     crossorigin=""/>
+
+ <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+     integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+     crossorigin=""></script>
+ <script src="https://unpkg.com/leaflet-tooltip@0.8.0/dist/leaflet-tooltip.js"></script> 
+ <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<input type="text" id="newMarker" />
+<div id="map"></div>
+
+  <script>
+  var map = L.map('map');
+  // Center on North Carolina
+  map.setView([35.5, -79], 7);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18
+  }).addTo(map);
+
+  var patientId = "30d44805-5e26-4f59-9cac-6ce7bd9b1058";
+
+  // Generate 4 random locations in the USA
+  function generateRandomNCLocation() {
+    // North Carolina bounds: latitude 33.8 - 36.6, longitude -84.3 to -75.5
+    var lat = 34.5 + Math.random() * 1.5;  
+    var lng = -82.0 + Math.random() * 4.0;  
+    return {
+      latitude: lat,
+      longitude: lng
+    };
+  }
+
+  // Get patient's Immunization records
+  $.get("https://r3.smarthealthit.org/Immunization?patient=" + patientId, function(immData) {
+  
+    // Create marker for each Immunization with random location
+    for (var i = 0; i < immData.entry.length; i++) {
+      var imm = immData.entry[i].resource;
+      var loc = generateRandomNCLocation();  // Generate random location
+    
+    // Create map marker
+    var marker = L.marker([loc.latitude, loc.longitude]);
+    marker.addTo(map);
+    
+    // Tooltip (hover): show ID, vaccine name, and date
+    var tooltipText = "Immunization ID: " + imm.id + "<br />" +
+                      "Date: " + imm.date.substring(0,10);
+    marker.bindTooltip(tooltipText);
+    
+    // Create popup content
+    var popupcontent = document.createElement("div");
+    
+    // Add delete button
+    var btn = document.createElement("button");
+    btn.innerHTML = "[X]";
+    popupcontent.append(btn);
+    btn.addEventListener("click", function() {
+      if (confirm("Sure you want to remove this marker?")) {
+        this.remove();
+      }
+    }.bind(marker));
+    
+    // Add detailed information
+    var p = document.createElement("p");
+    popupcontent.append(p);
+    p.innerHTML = "<strong>Immunization ID:</strong> " + imm.id + "<br />" +
+                  "<strong>Vaccine:</strong> " + imm.vaccineCode.text + "<br />" +
+                  "<strong>Date:</strong> " + imm.date.substring(0,10) + "<br />" +
+                  "<strong>Location:</strong> " + loc.latitude.toFixed(4) + ", " + loc.longitude.toFixed(4);
+    marker.bindPopup(popupcontent);
+    
+    // Click marker to zoom to location
+    marker.on("click", function() {
+      this._map.setView(this.getLatLng(), 8);
+    });
+  }
+});
+  </script>
+</body>
+</html>
