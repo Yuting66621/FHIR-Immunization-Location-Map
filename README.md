@@ -20,7 +20,7 @@ During development, I encountered a data limitation with the FHIR test server:
 
 1. **Issue**: The Immunization resources in the FHIR API do not contain direct `location` or `position` fields
 2. **Investigation**: I searched for Location resources on the server and found that only 2 unique geographic coordinates exist, with most locations being duplicates (same hospitals appearing multiple times)
-3. **Solution**: To demonstrate the mapping functionality for this assignment, I generated random coordinates within North Carolina (where the patient is located) to represent immunization locations
+3. **Solution**: To demonstrate the mapping functionality for this assignment, I generated random coordinates within North Carolina to represent immunization locations
 
 This approach allows the project to fulfill the assignment requirements of creating an interactive geographic visualization while acknowledging the real-world data constraints of the test FHIR server.
 
@@ -38,4 +38,4 @@ This approach allows the project to fulfill the assignment requirements of creat
 - OpenStreetMap for map tiles
 
 ## Assignment
-This project was completed as a class assignment for CHIP690.297 (Developing Health Apps with JavaScript and FHIR) at UNC-Chapel Hill.# FHIR-Immunization-Location-Map
+This project was completed as a class assignment for CHIP690.297 (Developing Health Apps with JavaScript and FHIR) at UNC-Chapel Hill.
